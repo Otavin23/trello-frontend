@@ -6,7 +6,6 @@ import { PeriflMenu } from '../perfilMenu'
 const Header = () => {
   const { data } = useContext(TrelloContext)
   const [modal, setModal] = useState(false)
-  const { data: user } = JSON.parse(localStorage.getItem('user') || '{}')
 
   return (
     <Flex

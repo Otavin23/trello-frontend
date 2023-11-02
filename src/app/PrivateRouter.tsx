@@ -11,7 +11,7 @@ const PrivateRouter: FC<IProps> = ({ children }: IProps): JSX.Element => {
   const { setData } = useContext(TrelloContext)
   const Router = useRouter()
 
-  const [token, setToken] = useState<string | null>(localStorage.getItem('token'))
+  const token = localStorage.getItem('token') || null
   const [navigate, setNavigate] = useState(false)
 
   useEffect(() => {
@@ -31,7 +31,7 @@ const PrivateRouter: FC<IProps> = ({ children }: IProps): JSX.Element => {
       }
     }
     authenticated()
-  }, [token])
+  }, [navigate, setData, token])
 
   if (!token) {
     localStorage.removeItem('user')

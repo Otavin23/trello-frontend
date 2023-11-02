@@ -30,7 +30,8 @@ const MyPage = () => {
     try {
       await api.post('/user/signup', data)
       toast.success('User created successfully. Take advantage of our services')
-    } catch (error) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
       toast.error(`${error.response.data.message}`)
     }
   }

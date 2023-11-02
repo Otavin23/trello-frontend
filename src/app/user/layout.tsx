@@ -18,7 +18,7 @@ const Layout = ({ children }: IProps) => {
     >
       <Container
         display="flex"
-        className="slide-in-right"
+        className="zoom-in-left"
         bg="#fff"
         boxShadow="rgba(0, 0, 0, 0.1) 0px 0px 10px"
         borderRadius="0.5rem"
