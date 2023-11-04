@@ -10,8 +10,8 @@ const themeChakra = extendTheme({
   },
 
   fonts: {
-    heading: `Noto Sans, sans-serif`,
-    body: `Noto Sans, sans-serif`,
+    heading: `Poppins, sans-serif`,
+    body: `Poppins, sans-serif`,
   },
 
   components: {

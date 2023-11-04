@@ -9,7 +9,6 @@ const Layout = ({ children }: IProps) => {
   return (
     <Flex
       as="main"
-      bgImage="url(../assets/Logo.svg)"
       bgRepeat="no-repeat"
       bgSize="cover"
       justify="center"

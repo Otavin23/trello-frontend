@@ -13,7 +13,8 @@ const Header = () => {
       bg="#fff"
       py="1rem"
       justify="center"
-      boxShadow="0px 2px 2px 0px #0000000D;"
+      boxShadow=" 0px 2px 2px 0px #0000000D"
+      borderBottom="1px solid #dfdfdf"
     >
       <Container
         maxW="1800px"

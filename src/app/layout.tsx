@@ -1,10 +1,10 @@
 'use client'
 
-import { Noto_Sans } from 'next/font/google'
+import { Poppins } from 'next/font/google'
 import { type ReactNode } from 'react'
 import { Providers } from './providers'
 
-const NotoSans = Noto_Sans({
+const PoppinsFont = Poppins({
   subsets: ['latin'],
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],
@@ -16,8 +16,7 @@ interface RootLayoutProps {
 
 export default function RootLayout({ children }: RootLayoutProps) {
   return (
-    <html lang="en" className={NotoSans.className}>
-      <head></head>
+    <html lang="en" className={PoppinsFont.className}>
       <body>
         <Providers>{children}</Providers>
       </body>
