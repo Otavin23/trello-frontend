@@ -27,6 +27,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-hot-toast'
 import { TrelloContext } from '../context/TrelloContext'
 import { PrivateRouter } from './PrivateRouter'
+import Link from 'next/link'
 
 interface IBoardCard {
   id: string
@@ -226,16 +227,17 @@ const MyPage = () => {
                   )}
 
                   {data?.map(({ id, image, name }: IBoardCard) => (
-                    <BoardCard
-                      key={id}
-                      image={image}
-                      title={name}
-                      personArray={[
-                        '../assets/header/logoavatar.png',
-                        '../assets/header/avatar3.jpg',
-                        '../assets/header/avatar4.png',
-                      ]}
-                    />
+                    <Link href={`/board/${id}`} key={id}>
+                      <BoardCard
+                        image={image}
+                        title={name}
+                        personArray={[
+                          '../assets/header/logoavatar.png',
+                          '../assets/header/avatar3.jpg',
+                          '../assets/header/avatar4.png',
+                        ]}
+                      />
+                    </Link>
                   ))}
                 </>
               )}
