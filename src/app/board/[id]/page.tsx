@@ -1,5 +1,5 @@
 'use client'
-
+import { useEffect, useState } from 'react'
 import {
   Flex,
   Container,
@@ -22,6 +22,10 @@ import {
 import { Header } from '@/components/header'
 import useSWR from 'swr'
 import { api } from '@/service/api'
+import { useForm, SubmitHandler } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { BoardCreate } from '@/utils/schema/BoardCreate'
+import { toast } from 'react-hot-toast'
 
 interface Iprops {
   params: {
@@ -29,15 +33,51 @@ interface Iprops {
   }
 }
 
+interface ICreateBoard {
+  title: string
+  image?: string
+  visiblied?: string
+}
+
+interface ITaskCreate {
+  title: string
+}
+
 const MyPage = ({ params }: Iprops) => {
-  const { data, isLoading } = useSWR(`/board/listOne/${params.id}`, async (url) => {
-    const { data } = await api.get(url)
-    return data
+  const [boardActive, setBoardActive] = useState({
+    id: '',
+    active: false,
   })
 
-  const { isOpen, onOpen, onClose } = useDisclosure()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ICreateBoard>({
+    resolver: yupResolver(BoardCreate),
+  })
 
-  console.log(data)
+  const { data, isLoading, mutate } = useSWR(
+    `/board/listOne/${params.id}`,
+    async (url) => {
+      const { data } = await api.get(url)
+      return data
+    },
+  )
+
+  const createTask: SubmitHandler<ITaskCreate> = async (task) => {
+    try {
+      await api.post('/board/sub/create', {
+        id: boardActive.id,
+        title: task.title,
+      })
+
+      toast.success('Task created successfully')
+      mutate()
+    } catch (error) {
+      toast.error('Error creating task')
+    }
+  }
 
   return (
     <>
@@ -148,7 +188,7 @@ const MyPage = ({ params }: Iprops) => {
                 <h1>carregando</h1>
               ) : (
                 <>
-                  {data.isDo.map((board) => (
+                  {data.isDo?.map((board, index) => (
                     <Box key={board.id}>
                       <Flex align="center" justify="space-between">
                         <Heading
@@ -172,84 +212,57 @@ const MyPage = ({ params }: Iprops) => {
                       </Flex>
 
                       <Box>
-                        <Box
-                          as="article"
-                          my="1rem"
-                          p="1rem"
-                          bg="#fff"
-                          boxShadow="0px 4px 12px 0px #0000000D"
-                          borderRadius="1rem"
-                        >
-                          <Text fontWeight="500" fontSize="20px">
-                            ✋🏿 Add what you d like to work on below
-                          </Text>
-
-                          <UnorderedList w="100%" m="1rem 0" listStyleType="none">
-                            <ListItem>
-                              <Text
-                                as="span"
-                                w="100%"
-                                bg="#EBDCF9"
-                                px="0.8rem"
-                                py="0.3rem"
-                                fontSize="14px"
-                                fontWeight="500"
-                                borderRadius="1rem"
-                                color="#9B51E0"
-                              >
-                                Concept
-                              </Text>
-                            </ListItem>
-                          </UnorderedList>
-
-                          <Button bg="#2F80ED" p="0.5rem" h="100%" borderRadius="0.7rem">
-                            <Image src="../assets/add.png" alt="" w="20px" h="20px" />
-                          </Button>
-                        </Box>
-
-                        <Box
-                          as="article"
-                          my="1rem"
-                          p="1rem"
-                          bg="#fff"
-                          boxShadow="0px 4px 12px 0px #0000000D"
-                          borderRadius="1rem"
-                        >
-                          <Image
-                            src="../assets/trabalho.jpg"
-                            alt=""
+                        {board.card?.map((card) => (
+                          <Box
+                            key={card.id}
+                            as="article"
+                            my="1rem"
+                            p="1rem"
+                            bg="#fff"
+                            boxShadow="0px 4px 12px 0px #0000000D"
                             borderRadius="1rem"
-                          />
-                          <Text fontWeight="500" fontSize="20px" mt="1rem">
-                            ✋🏿 Add what you d like to work on below
-                          </Text>
+                          >
+                            <Text fontWeight="500" fontSize="20px">
+                              ✋🏿 {card.title}
+                            </Text>
 
-                          <UnorderedList w="100%" m="1rem 0" listStyleType="none">
-                            <ListItem>
-                              <Text
-                                as="span"
-                                w="100%"
-                                bg="#EBDCF9"
-                                px="0.8rem"
-                                py="0.3rem"
-                                fontSize="14px"
-                                fontWeight="500"
-                                borderRadius="1rem"
-                                color="#9B51E0"
-                              >
-                                Concept
-                              </Text>
-                            </ListItem>
-                          </UnorderedList>
+                            <UnorderedList w="100%" m="1rem 0" listStyleType="none">
+                              <ListItem>
+                                <Text
+                                  as="span"
+                                  w="100%"
+                                  bg="#EBDCF9"
+                                  px="0.8rem"
+                                  py="0.3rem"
+                                  fontSize="14px"
+                                  fontWeight="500"
+                                  borderRadius="1rem"
+                                  color="#9B51E0"
+                                >
+                                  Concept
+                                </Text>
+                              </ListItem>
+                            </UnorderedList>
 
-                          <Button bg="#2F80ED" p="0.5rem" h="100%" borderRadius="0.7rem">
-                            <Image src="../assets/add.png" alt="" w="20px" h="20px" />
-                          </Button>
-                        </Box>
+                            <Button
+                              bg="#2F80ED"
+                              p="0.5rem"
+                              h="100%"
+                              borderRadius="0.7rem"
+                            >
+                              <Image src="../assets/add.png" alt="" w="20px" h="20px" />
+                            </Button>
+                          </Box>
+                        ))}
                       </Box>
 
                       <Button
-                        onClick={onOpen}
+                        onClick={() =>
+                          setBoardActive({
+                            id: board.id,
+                            active: !boardActive.active,
+                          })
+                        }
                         w="100%"
                         display="flex"
                         justifyContent="space-between"
@@ -264,9 +277,17 @@ const MyPage = ({ params }: Iprops) => {
                         <Image src="../assets/boards/add.png" alt="" w="20px" h="20px" />
                       </Button>
 
-                      <Modal isOpen={isOpen} onClose={onClose}>
+                      <Modal
+                        isOpen={boardActive.active}
+                        onClose={() => setBoardActive({ ...boardActive, active: false })}
+                      >
                         <ModalOverlay />
-                        <ModalContent as="form" p="2rem" borderRadius="1rem">
+                        <ModalContent
+                          as="form"
+                          onSubmit={handleSubmit(createTask)}
+                          p="2rem"
+                          borderRadius="1rem"
+                        >
                           <ModalBody p="0">
                             <Image
                               src="../assets/trabalho.jpg"
@@ -284,12 +305,19 @@ const MyPage = ({ params }: Iprops) => {
                               mt="1rem"
                               h="50px"
                               borderRadius="0.6rem"
-                              bg="#fff"
-                              border="2px solid #E0E0E0"
+                              bg={errors['title'] ? '#fff0f0' : '#fff'}
+                              border={
+                                errors['title'] ? '2px solid red' : '2px solid #E0E0E0'
+                              }
                               _placeholder={{
                                 color: '#6B778C',
                               }}
+                              {...register('title')}
                             />
+
+                            <Text fontWeight="500" color="#fc3535" fontSize="13px">
+                              {errors['title']?.message}
+                            </Text>
 
                             <Flex justify="space-between" mt="2rem">
                               <Button
@@ -334,17 +362,22 @@ const MyPage = ({ params }: Iprops) => {
                               </Button>
                             </Flex>
                           </ModalBody>
-
                           <ModalFooter p="0" mt="2rem">
-                            <Button variant="ghost" mr={3} onClick={onClose}>
+                            <Button
+                              variant="ghost"
+                              mr={3}
+                              onClick={() => {
+                                setBoardActive({ ...boardActive, active: false })
+                              }}
+                            >
                               Cancel
                             </Button>
                             <Button
+                              type="submit"
                               bg="#2F80ED"
                               color="#fff"
                               fontWeight="400"
                               borderRadius="0.6rem"
-                              type="submit"
                             >
                               <Image
                                 src="../assets/add.png"
@@ -373,7 +406,6 @@ const MyPage = ({ params }: Iprops) => {
               fontWeight="500"
               py="1.4rem"
               borderRadius="0.8rem"
-              mt="2rem"
               ml="2.5rem"
             >
               Add another this
