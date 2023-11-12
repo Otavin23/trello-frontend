@@ -48,6 +48,10 @@ const MyPage = ({ params }: Iprops) => {
     id: '',
     active: false,
   })
+  const [crateColumn, setCreateColumn] = useState({
+    id: '',
+    active: false,
+  })
 
   const {
     register,
@@ -68,6 +72,7 @@ const MyPage = ({ params }: Iprops) => {
   const createTask: SubmitHandler<ITaskCreate> = async (task) => {
     try {
       await api.post('/board/sub/create', {
+        idColumn: !isLoading && data.id,
         id: boardActive.id,
         title: task.title,
       })
@@ -79,12 +84,26 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
+  const createColumn: SubmitHandler<ITaskCreate> = async (task) => {
+    try {
+      await api.post('/board/column', {
+        id: crateColumn.id,
+        title: task.title,
+      })
+
+      toast.success('Column created successfully')
+      mutate()
+    } catch (error) {
+      toast.error('Error creating column')
+    }
+  }
+
   return (
     <>
       <Header />
 
-      <Flex as="main" justify="center" w="100%" h="calc(100vh - 0vh)" bg="#fff">
-        <Container maxW="1800px" w="95%" p="0" m="0" h="100%">
+      <Flex as="main" justify="center" w="100%" bg="#fff">
+        <Container maxW="1800px" w="95%" p="0" m="0" h="calc(100vh - 200px)">
           <Flex as="section" justify="space-between" w="100%" my="2rem">
             <Flex align="center">
               <Button
@@ -177,19 +196,28 @@ const MyPage = ({ params }: Iprops) => {
             </Box>
           </Flex>
 
-          <Flex bg="#F8F9FD" borderRadius="2rem" p="2rem" h="100%">
+          <Flex
+            bg="#F8F9FD"
+            justify="space-between"
+            borderRadius="2rem"
+            p="2rem"
+            h="100%"
+          >
             <Grid
               as="section"
-              gridTemplateColumns="320px 320px 320px 320px"
+              gridTemplateColumns={`repeat(${!isLoading && data.isDo?.length}, 320px)`}
               columnGap="2.5rem"
+              overflow="auto"
+              height="100%"
               justifyContent="space-between"
+              pb="2rem"
             >
               {isLoading ? (
                 <h1>carregando</h1>
               ) : (
                 <>
                   {data.isDo?.map((board, index) => (
-                    <Box key={board.id}>
+                    <Box key={index}>
                       <Flex align="center" justify="space-between">
                         <Heading
                           as="h3"
@@ -398,7 +426,14 @@ const MyPage = ({ params }: Iprops) => {
             </Grid>
 
             <Button
+              onClick={() =>
+                setCreateColumn({
+                  id: `${!isLoading && data.id}`,
+                  active: !crateColumn.active,
+                })
+              }
               w="100%"
+              maxW="250px"
               display="flex"
               justifyContent="space-between"
               bg="#DAE4FD"
@@ -411,6 +446,69 @@ const MyPage = ({ params }: Iprops) => {
               Add another this
               <Image src="../assets/boards/add.png" alt="" w="20px" h="20px" />
             </Button>
+
+            <Modal
+              isCentered
+              isOpen={crateColumn.active}
+              onClose={() => setCreateColumn({ ...crateColumn, active: false })}
+            >
+              <ModalOverlay />
+              <ModalContent
+                as="form"
+                onSubmit={handleSubmit(createColumn)}
+                p="2rem"
+                borderRadius="1rem"
+              >
+                <ModalBody p="0">
+                  <Heading fontSize="25px">Create column task</Heading>
+
+                  <Input
+                    type="text"
+                    placeholder="Add board title"
+                    filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                    mt="1rem"
+                    h="50px"
+                    borderRadius="0.6rem"
+                    bg={errors['title'] ? '#fff0f0' : '#fff'}
+                    border={errors['title'] ? '2px solid red' : '2px solid #E0E0E0'}
+                    _placeholder={{
+                      color: '#6B778C',
+                    }}
+                    {...register('title')}
+                  />
+
+                  <Text fontWeight="500" color="#fc3535" fontSize="13px">
+                    {errors['title']?.message}
+                  </Text>
+                </ModalBody>
+
+                <ModalFooter p="0" mt="2rem">
+                  <Button
+                    variant="ghost"
+                    mr={3}
+                    onClick={() => setCreateColumn({ ...crateColumn, active: false })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="submit"
+                    bg="#2F80ED"
+                    color="#fff"
+                    fontWeight="400"
+                    borderRadius="0.6rem"
+                  >
+                    <Image
+                      src="../assets/add.png"
+                      alt="white cross image, to add card"
+                      h="15px"
+                      w="15px"
+                      mr="0.5rem"
+                    />
+                    Column task Create
+                  </Button>
+                </ModalFooter>
+              </ModalContent>
+            </Modal>
           </Flex>
         </Container>
       </Flex>
