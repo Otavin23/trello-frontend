@@ -1,10 +1,10 @@
 'use client'
 
-import { Poppins } from 'next/font/google'
+import { Noto_Sans } from 'next/font/google'
 import { type ReactNode } from 'react'
 import { Providers } from './providers'
 
-const PoppinsFont = Poppins({
+const PoppinsFont = Noto_Sans({
   subsets: ['latin'],
   display: 'swap',
   weight: ['400', '500', '600', '700', '800'],

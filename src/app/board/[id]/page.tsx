@@ -55,6 +55,17 @@ const MyPage = ({ params }: Iprops) => {
   })
 
   const [menu, setMenu] = useState(false)
+  const [menuCard, setMenuCard] = useState({
+    id: '',
+    active: false,
+  })
+  const [rename, setRename] = useState({
+    userId: '',
+    id: '',
+    active: false,
+  })
+  const [visibility, setVisibility] = useState(false)
+  const [invite, setInvite] = useState(false)
 
   const {
     register,
@@ -101,6 +112,36 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
+  const deleteColumn = async (id: string, userId: string) => {
+    try {
+      await api.post('/board/delete', {
+        userId,
+        id,
+      })
+
+      toast.success('column removed')
+
+      mutate()
+    } catch (error) {
+      toast.error('Error removing column')
+    }
+  }
+
+  const renameColumn: SubmitHandler<ITaskCreate> = async (task) => {
+    try {
+      await api.post('board/rename', {
+        id: rename.id,
+        userId: rename.userId,
+        title: task.title,
+      })
+
+      toast.success('Column renamed successfully')
+      mutate()
+    } catch (error) {
+      toast.error('problem renaming column')
+    }
+  }
+
   return (
     <>
       <Header />
@@ -108,23 +149,91 @@ const MyPage = ({ params }: Iprops) => {
         <Container maxW="1800px" w="95%" p="0" m="0" h="calc(100vh - 200px)">
           <Flex as="section" justify="space-between" w="100%" my="2rem">
             <Flex align="center">
-              <Button
-                bg="#F2F2F2"
-                color="#828282"
-                fontWeight="500"
-                py="1.3rem"
-                px="1.5rem"
-                borderRadius="0.7rem"
-              >
-                <Image
-                  src="../assets/modalBoard/privado.png"
-                  alt=""
-                  w="20px"
-                  h="20px"
-                  mr="1rem"
-                />
-                Private
-              </Button>
+              <Box pos="relative">
+                <Button
+                  onClick={() => setVisibility(!visibility)}
+                  bg="#F2F2F2"
+                  color="#828282"
+                  fontWeight="500"
+                  py="1.3rem"
+                  px="1.5rem"
+                  borderRadius="0.7rem"
+                >
+                  <Image
+                    src="../assets/modalBoard/privado.png"
+                    alt=""
+                    w="20px"
+                    h="20px"
+                    mr="1rem"
+                  />
+                  Private
+                </Button>
+                {visibility && (
+                  <Box
+                    boxShadow="0px 2px 4px 0px rgba(0, 0, 0, 0.05)"
+                    border="1px solid #E0E0E0"
+                    bg="#FFFFFF"
+                    pos="absolute"
+                    zIndex="2"
+                    mt="1rem"
+                    w="350px"
+                    borderRadius="0.8rem"
+                    p="1rem"
+                  >
+                    <Heading as="h4" fontSize="20px" color="#4F4F4F" fontWeight="600">
+                      Visibility
+                    </Heading>
+                    <Text mt="0.5rem" mb="1.5rem" color="#828282">
+                      Choose who can see to this board.
+                    </Text>
+                    <Box bg="#F2F2F2" p="1rem" borderRadius="0.6rem">
+                      <Heading
+                        as="h4"
+                        fontSize="17px"
+                        fontWeight="500"
+                        color="#4F4F4F"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Image
+                          src="../assets/globo.png"
+                          alt=""
+                          w="20px"
+                          h="20px"
+                          mr="0.5rem"
+                        />
+                        Public
+                      </Heading>
+                      <Text mt="0.5rem" color="#828282">
+                        Anyone on the internet can see this.
+                      </Text>
+                    </Box>
+
+                    <Box bg="transparent" p="1rem" borderRadius="0.6rem" mt="1rem">
+                      <Heading
+                        as="h4"
+                        fontSize="17px"
+                        fontWeight="500"
+                        color="#4F4F4F"
+                        display="flex"
+                        alignItems="center"
+                      >
+                        <Image
+                          src="../assets/cadeado.png"
+                          alt=""
+                          w="20px"
+                          h="20px"
+                          mr="0.5rem"
+                        />
+                        Private
+                      </Heading>
+                      <Text mt="0.5rem" color="#828282">
+                        Only board members can see this
+                      </Text>
+                    </Box>
+                  </Box>
+                )}
+              </Box>
 
               <UnorderedList
                 display="flex"
@@ -135,16 +244,6 @@ const MyPage = ({ params }: Iprops) => {
                 <ListItem mr="1rem">
                   <Image
                     src="../assets/header/logoavatar.png"
-                    alt=""
-                    w="40px"
-                    h="40px"
-                    borderRadius="30%"
-                  />
-                </ListItem>
-
-                <ListItem mr="1rem">
-                  <Image
-                    src="../assets/header/avatar2.jpg"
                     alt=""
                     w="40px"
                     h="40px"
@@ -173,9 +272,118 @@ const MyPage = ({ params }: Iprops) => {
                 </ListItem>
               </UnorderedList>
 
-              <Button bg="#2F80ED" p="0" borderRadius="30%">
-                <Image src="../assets/add.png" alt="" w="20px" h="20px" />
-              </Button>
+              <Box>
+                <Button
+                  bg="#2F80ED"
+                  p="0"
+                  borderRadius="30%"
+                  onClick={() => setInvite(!invite)}
+                >
+                  <Image src="../assets/add.png" alt="" w="20px" h="20px" />
+                </Button>
+
+                {invite && (
+                  <Box
+                    pos="absolute"
+                    bg="#FFFFFF"
+                    border="1px solid #E0E0E0"
+                    boxShadow="0px 2px 4px 0px rgba(0, 0, 0, 0.05)"
+                    p="0.8rem"
+                    zIndex="2"
+                    borderRadius="0.8rem"
+                    mt="0.5rem"
+                    w="320px"
+                  >
+                    <Heading as="h3" fontSize="17px" color="#4F4F4F" fontWeight="700">
+                      Invite to Board
+                    </Heading>
+
+                    <Text mt="0.5rem" mb="1rem" color="#828282">
+                      Search users you want to invite to
+                    </Text>
+
+                    <Flex
+                      bg="#fff"
+                      p="0.2rem"
+                      filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                      borderRadius="0.5rem"
+                      h="45px"
+                    >
+                      <Input
+                        type="text"
+                        placeholder="User..."
+                        variant="unstyled"
+                        px="0.5rem"
+                      />
+                      <Button bg="#2F80ED" h="100%" p="0.5rem 0" borderRadius="0.7rem">
+                        <Image src="../assets/lupa.png" alt="" w="20px" h="20px" />
+                      </Button>
+                    </Flex>
+
+                    <UnorderedList
+                      border="1px solid #E0E0E0"
+                      filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                      bg="#fff"
+                      m="1rem 0"
+                      borderRadius="0.5rem"
+                      p="1rem"
+                      pt="0"
+                    >
+                      <ListItem mt="1rem" display="flex" alignItems="center">
+                        <Image
+                          src="../assets/header/avatar3.jpg"
+                          alt=""
+                          w="50px"
+                          h="50px"
+                          borderRadius="0.5rem"
+                          objectFit="cover"
+                          mr="1rem"
+                        />
+
+                        <Heading as="h4" fontSize="17px" color="#333333">
+                          Morris Croft
+                        </Heading>
+                      </ListItem>
+
+                      <ListItem mt="1rem" display="flex" alignItems="center">
+                        <Image
+                          src="../assets/header/avatar2.jpg"
+                          alt=""
+                          w="50px"
+                          h="50px"
+                          borderRadius="0.5rem"
+                          objectFit="cover"
+                          mr="1rem"
+                        />
+
+                        <Heading as="h4" fontSize="17px" color="#333333">
+                          Kunal Hough
+                        </Heading>
+                      </ListItem>
+
+                      <ListItem mt="1rem" display="flex" alignItems="center">
+                        <Image
+                          src="../assets/header/avatar1.jpg"
+                          alt=""
+                          w="50px"
+                          h="50px"
+                          borderRadius="0.5rem"
+                          objectFit="cover"
+                          mr="1rem"
+                        />
+
+                        <Heading as="h4" fontSize="17px" color="#333333">
+                          Kierran Salinas
+                        </Heading>
+                      </ListItem>
+                    </UnorderedList>
+
+                    <Button w="100%" bg="#2F80ED" color="#fff" fontSize="18px">
+                      Invite
+                    </Button>
+                  </Box>
+                )}
+              </Box>
             </Flex>
 
             <Box pos="relative">
@@ -204,7 +412,7 @@ const MyPage = ({ params }: Iprops) => {
                   top="83px"
                   w="400px"
                   right="1px"
-                  zIndex="1"
+                  zIndex="2"
                   h="100%"
                   p="1.5rem"
                   bg="#fff"
@@ -420,8 +628,9 @@ const MyPage = ({ params }: Iprops) => {
               gridTemplateColumns={`repeat(${!isLoading && data.isDo?.length}, 320px)`}
               columnGap="2.5rem"
               overflow="auto"
-              height="100%"
-              justifyContent="space-between"
+              h="100%"
+              w="100%"
+              justifyContent="start"
               pb="2rem"
             >
               {isLoading ? (
@@ -440,8 +649,17 @@ const MyPage = ({ params }: Iprops) => {
                           >
                             {board.title}
                           </Heading>
-                          <Box>
-                            <Button variant="unstyled">
+                          <Box pos="relative">
+                            <Button
+                              variant="unstyled"
+                              onClick={() =>
+                                setMenuCard({
+                                  id: board.id,
+                                  active:
+                                    board.id === menuCard.id ? !menuCard.active : !false,
+                                })
+                              }
+                            >
                               <Image
                                 src="../assets/boards/menu.png"
                                 alt=""
@@ -449,6 +667,135 @@ const MyPage = ({ params }: Iprops) => {
                                 h="25px"
                               />
                             </Button>
+                            {menuCard.id === board.id && menuCard.active && (
+                              <Box
+                                pos="absolute"
+                                bg="#fff"
+                                boxShadow="0px 2px 4px 0px #0000000D"
+                                border="1px solid #E0E0E0"
+                                zIndex="1"
+                                w="220px"
+                                borderRadius="1rem"
+                                p="1rem"
+                              >
+                                <Button
+                                  onClick={() =>
+                                    setRename({
+                                      userId: data.id,
+                                      id: board.id,
+                                      active: !rename.active,
+                                    })
+                                  }
+                                  w="100%"
+                                  display="flex"
+                                  justifyContent="start"
+                                  bg="transparent"
+                                  py="1.5rem"
+                                  pt="1rem"
+                                  px="0"
+                                  color="#828282"
+                                  fontWeight="500"
+                                  borderRadius="0"
+                                  borderBottom="1px solid #E0E0E0"
+                                  _hover={{
+                                    bg: 'none',
+                                    color: '#000',
+                                  }}
+                                >
+                                  Rename
+                                </Button>
+
+                                <Button
+                                  onClick={() => deleteColumn(board.id, data.id)}
+                                  w="100%"
+                                  display="flex"
+                                  justifyContent="start"
+                                  bg="transparent"
+                                  py="1rem"
+                                  px="0"
+                                  color="#828282"
+                                  fontWeight="500"
+                                  _hover={{
+                                    bg: 'none',
+                                    color: '#000',
+                                  }}
+                                >
+                                  Delete this list
+                                </Button>
+                              </Box>
+                            )}
+                            {rename.active && (
+                              <Modal
+                                isCentered
+                                isOpen={rename.active}
+                                onClose={() =>
+                                  setRename({
+                                    ...rename,
+                                    active: !rename.active,
+                                  })
+                                }
+                              >
+                                <ModalOverlay />
+                                <ModalContent
+                                  as="form"
+                                  onSubmit={handleSubmit(renameColumn)}
+                                  p="2rem"
+                                  borderRadius="1rem"
+                                >
+                                  <ModalBody p="0">
+                                    <Heading fontSize="25px">Rename Column</Heading>
+
+                                    <Input
+                                      type="text"
+                                      placeholder="Rename column title"
+                                      filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                                      mt="1rem"
+                                      h="50px"
+                                      borderRadius="0.6rem"
+                                      bg={errors['title'] ? '#fff0f0' : '#fff'}
+                                      border={
+                                        errors['title']
+                                          ? '2px solid red'
+                                          : '2px solid #E0E0E0'
+                                      }
+                                      _placeholder={{
+                                        color: '#6B778C',
+                                      }}
+                                      {...register('title')}
+                                    />
+
+                                    <Text
+                                      fontWeight="500"
+                                      color="#fc3535"
+                                      fontSize="13px"
+                                    >
+                                      {errors['title']?.message}
+                                    </Text>
+                                  </ModalBody>
+
+                                  <ModalFooter p="0" mt="2rem">
+                                    <Button
+                                      variant="ghost"
+                                      mr={3}
+                                      onClick={() =>
+                                        setRename({ ...rename, active: !rename.active })
+                                      }
+                                    >
+                                      Cancel
+                                    </Button>
+                                    <Button
+                                      type="submit"
+                                      bg="#2F80ED"
+                                      color="#fff"
+                                      fontWeight="400"
+                                      borderRadius="0.6rem"
+                                    >
+                                      Rename
+                                    </Button>
+                                  </ModalFooter>
+                                </ModalContent>
+                              </Modal>
+                            )}
                           </Box>
                         </Flex>
 

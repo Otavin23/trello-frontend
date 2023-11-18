@@ -9,11 +9,6 @@ const themeChakra = extendTheme({
     },
   },
 
-  fonts: {
-    heading: `Poppins, sans-serif`,
-    body: `Poppins, sans-serif`,
-  },
-
   components: {
     Container: {
       baseStyle: {
