@@ -67,7 +67,14 @@ const MyPage = ({ params }: Iprops) => {
   const [visibility, setVisibility] = useState(false)
 
   const [invite, setInvite] = useState(false)
+
   const [infoCard, setInfoCard] = useState(false)
+
+  const [label, setLabel] = useState(false)
+
+  const [cover, setCover] = useState(false)
+
+  const [cardMember, setCardMember] = useState(false)
 
   const {
     register,
@@ -1283,29 +1290,9 @@ const MyPage = ({ params }: Iprops) => {
                                     Actions
                                   </Heading>
 
-                                  <Box mt="1rem">
+                                  <Box mt="1rem" pos="relative">
                                     <Button
-                                      w="100%"
-                                      bg="#F2F2F2"
-                                      display="flex"
-                                      justifyContent="start"
-                                      px="1rem"
-                                      py="1.5rem"
-                                      color="#828282"
-                                    >
-                                      <Image
-                                        src="../assets/bandeira.png"
-                                        alt=""
-                                        w="20px"
-                                        h="20px"
-                                        mr="1rem"
-                                      />
-                                      Labels
-                                    </Button>
-                                  </Box>
-
-                                  <Box mt="1rem">
-                                    <Button
+                                      onClick={() => setCover(!cover)}
                                       w="100%"
                                       bg="#F2F2F2"
                                       display="flex"
@@ -1317,15 +1304,447 @@ const MyPage = ({ params }: Iprops) => {
                                       <Image
                                         src="../assets/modalBoard/fotografia.png"
                                         alt=""
-                                        w="20px"
-                                        h="20px"
+                                        w="15px"
+                                        h="15px"
                                         mr="0.5rem"
                                       />
                                       Cover
                                     </Button>
+
+                                    {cover && (
+                                      <Box
+                                        pos="absolute"
+                                        zIndex="2"
+                                        bg="#fff"
+                                        boxShadow="0px 2px 4px 0px rgba(0, 0, 0, 0.05)"
+                                        border="1px solid #E0E0E0"
+                                        p="0.8rem"
+                                        mt="1rem"
+                                        borderRadius="0.8rem"
+                                        w="330px"
+                                        display="flex"
+                                        flexDirection="column"
+                                        alignItems="center"
+                                      >
+                                        <Heading
+                                          as="h4"
+                                          fontSize="17px"
+                                          color="#4F4F4F"
+                                          w="100%"
+                                        >
+                                          Photo Search
+                                        </Heading>
+
+                                        <Text
+                                          mb="1rem"
+                                          mt="0.5rem"
+                                          color="#828282"
+                                          letterSpacing="-0.42px"
+                                          w="100%"
+                                        >
+                                          Search Unsplash for photos
+                                        </Text>
+
+                                        <Flex
+                                          bg="#fff"
+                                          p="0.2rem"
+                                          filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                                          borderRadius="0.5rem"
+                                          h="50px"
+                                          w="100%"
+                                        >
+                                          <Input
+                                            type="text"
+                                            placeholder="Keywords..."
+                                            variant="unstyled"
+                                            px="0.5rem"
+                                          />
+                                          <Button
+                                            bg="#2F80ED"
+                                            h="100%"
+                                            w="55px"
+                                            p="0.5rem 0"
+                                            borderRadius="0.8rem"
+                                          >
+                                            <Image
+                                              src="../assets/lupa.png"
+                                              alt=""
+                                              w="20px"
+                                              h="20px"
+                                            />
+                                          </Button>
+                                        </Flex>
+
+                                        <UnorderedList
+                                          m="1rem 0 1rem 0"
+                                          display="grid"
+                                          w="100%"
+                                          gridTemplateColumns="repeat(4, 68px)"
+                                          justifyContent="space-between"
+                                          listStyleType="none"
+                                        >
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image1.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="100%"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image2.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image3.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image4.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image4.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="100%"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image3.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image2.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image1.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image1.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="100%"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image2.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image3.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+
+                                          <ListItem mt="0.5rem">
+                                            <Image
+                                              src="../assets/boards/cover/image4.jpg"
+                                              alt=""
+                                              h="60px"
+                                              w="70px"
+                                              objectFit="cover"
+                                              borderRadius="0.5rem"
+                                            />
+                                          </ListItem>
+                                        </UnorderedList>
+                                      </Box>
+                                    )}
                                   </Box>
 
-                                  <Box mt="2rem">
+                                  <Box mt="1rem" pos="relative">
+                                    <Button
+                                      onClick={() => setLabel(!label)}
+                                      w="100%"
+                                      bg="#F2F2F2"
+                                      display="flex"
+                                      justifyContent="start"
+                                      px="1rem"
+                                      py="1.5rem"
+                                      color="#828282"
+                                    >
+                                      <Image
+                                        src="../assets/bandeira.png"
+                                        alt=""
+                                        w="15px"
+                                        h="15px"
+                                        mr="1rem"
+                                      />
+                                      Labels
+                                    </Button>
+                                    {label && (
+                                      <Box
+                                        pos="absolute"
+                                        zIndex="2"
+                                        bg="#fff"
+                                        boxShadow="0px 2px 4px 0px rgba(0, 0, 0, 0.05)"
+                                        border="1px solid #E0E0E0"
+                                        p="0.8rem"
+                                        mt="1rem"
+                                        borderRadius="0.8rem"
+                                        w="330px"
+                                        display="flex"
+                                        flexDirection="column"
+                                        alignItems="center"
+                                      >
+                                        <Heading
+                                          as="h4"
+                                          fontSize="17px"
+                                          color="#4F4F4F"
+                                          w="100%"
+                                        >
+                                          Label
+                                        </Heading>
+
+                                        <Text
+                                          mb="1rem"
+                                          mt="0.5rem"
+                                          color="#828282"
+                                          letterSpacing="-0.42px"
+                                          w="100%"
+                                        >
+                                          Select a name and color
+                                        </Text>
+
+                                        <Input
+                                          type="text"
+                                          placeholder="Label..."
+                                          bg="#FFF"
+                                          filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                                          py="1.5rem"
+                                          borderRadius="0.8rem"
+                                          border="1px solid transparent"
+                                          _placeholder={{
+                                            color: '#BDBDBD',
+                                            fontWeight: '500',
+                                          }}
+                                        />
+
+                                        <UnorderedList
+                                          m="1rem 0 1rem 0"
+                                          display="grid"
+                                          w="100%"
+                                          gridTemplateColumns="repeat(4, 65px)"
+                                          justifyContent="space-between"
+                                          listStyleType="none"
+                                        >
+                                          <ListItem
+                                            bg="#219653"
+                                            py="1m"
+                                            mt="0.5rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#F2C94C"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#F2994A"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#EB5757"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#2F80ED"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#56CCF2"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#6FCF97"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#333"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#4F4F4F"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#828282"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#BDBDBD"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+
+                                          <ListItem
+                                            bg="#E0E0E0"
+                                            mt="0.5rem"
+                                            py="1rem"
+                                            borderRadius="0.4rem"
+                                          ></ListItem>
+                                        </UnorderedList>
+
+                                        <Text
+                                          display="flex"
+                                          alignItems="center"
+                                          fontWeight="600"
+                                          color="#BDBDBD"
+                                          w="100%"
+                                        >
+                                          <Image
+                                            src="../assets/bandeira.png"
+                                            alt=""
+                                            w="15px"
+                                            h="15px"
+                                            mr="1rem"
+                                          />
+                                          Available
+                                        </Text>
+
+                                        <UnorderedList
+                                          m="1rem 0 1rem 0"
+                                          display="flex"
+                                          alignItems="center"
+                                          listStyleType="none"
+                                          w="100%"
+                                        >
+                                          <ListItem
+                                            bg="#D5E6FB"
+                                            fontSize="14px"
+                                            px="0.8rem"
+                                            py="0.2rem"
+                                            mr="1rem"
+                                            borderRadius="1rem"
+                                            color="#2F80ED"
+                                            fontWeight="500"
+                                          >
+                                            Technical
+                                          </ListItem>
+                                          <ListItem
+                                            bg="#D3EADD"
+                                            fontSize="14px"
+                                            px="0.8rem"
+                                            py="0.2rem"
+                                            mr="1rem"
+                                            borderRadius="1rem"
+                                            color="#219653"
+                                            fontWeight="500"
+                                          >
+                                            Design
+                                          </ListItem>
+                                        </UnorderedList>
+
+                                        <Button
+                                          bg="#2F80ED"
+                                          color="#fff"
+                                          fontWeight="500"
+                                          px="2rem"
+                                          borderRadius="0.8rem"
+                                          mt="1rem"
+                                        >
+                                          Add
+                                        </Button>
+                                      </Box>
+                                    )}
+                                  </Box>
+
+                                  <Box mt="2rem" pos="relative">
                                     <Text
                                       as="span"
                                       display="flex"
@@ -1401,6 +1820,7 @@ const MyPage = ({ params }: Iprops) => {
                                     </UnorderedList>
 
                                     <Button
+                                      onClick={() => setCardMember(!cardMember)}
                                       w="100%"
                                       display="flex"
                                       justifyContent="space-between"
@@ -1419,6 +1839,151 @@ const MyPage = ({ params }: Iprops) => {
                                         h="20px"
                                       />
                                     </Button>
+                                    {cardMember && (
+                                      <Box
+                                        pos="absolute"
+                                        bg="#FFFFFF"
+                                        border="1px solid #E0E0E0"
+                                        boxShadow="0px 2px 4px 0px rgba(0, 0, 0, 0.05)"
+                                        p="0.8rem"
+                                        zIndex="2"
+                                        borderRadius="0.8rem"
+                                        mt="0.5rem"
+                                        w="330px"
+                                      >
+                                        <Heading
+                                          as="h3"
+                                          fontSize="17px"
+                                          color="#4F4F4F"
+                                          fontWeight="700"
+                                        >
+                                          Members
+                                        </Heading>
+
+                                        <Text mt="0.5rem" mb="1rem" color="#828282">
+                                          Assign members to this card
+                                        </Text>
+
+                                        <Flex
+                                          bg="#fff"
+                                          p="0.2rem"
+                                          filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                                          borderRadius="0.5rem"
+                                          h="45px"
+                                        >
+                                          <Input
+                                            type="text"
+                                            placeholder="User..."
+                                            variant="unstyled"
+                                            px="0.5rem"
+                                          />
+                                          <Button
+                                            bg="#2F80ED"
+                                            h="100%"
+                                            p="0.5rem 0"
+                                            borderRadius="0.7rem"
+                                          >
+                                            <Image
+                                              src="../assets/lupa.png"
+                                              alt=""
+                                              w="20px"
+                                              h="20px"
+                                            />
+                                          </Button>
+                                        </Flex>
+
+                                        <UnorderedList
+                                          border="1px solid #E0E0E0"
+                                          filter="drop-shadow(0px 4px 12px rgba(0, 0, 0, 0.10))"
+                                          bg="#fff"
+                                          m="1rem 0"
+                                          borderRadius="0.5rem"
+                                          p="1rem"
+                                          pt="0"
+                                        >
+                                          <ListItem
+                                            mt="1rem"
+                                            display="flex"
+                                            alignItems="center"
+                                          >
+                                            <Image
+                                              src="../assets/header/avatar3.jpg"
+                                              alt=""
+                                              w="50px"
+                                              h="50px"
+                                              borderRadius="0.5rem"
+                                              objectFit="cover"
+                                              mr="1rem"
+                                            />
+
+                                            <Heading
+                                              as="h4"
+                                              fontSize="17px"
+                                              color="#333333"
+                                            >
+                                              Morris Croft
+                                            </Heading>
+                                          </ListItem>
+
+                                          <ListItem
+                                            mt="1rem"
+                                            display="flex"
+                                            alignItems="center"
+                                          >
+                                            <Image
+                                              src="../assets/header/avatar2.jpg"
+                                              alt=""
+                                              w="50px"
+                                              h="50px"
+                                              borderRadius="0.5rem"
+                                              objectFit="cover"
+                                              mr="1rem"
+                                            />
+
+                                            <Heading
+                                              as="h4"
+                                              fontSize="17px"
+                                              color="#333333"
+                                            >
+                                              Kunal Hough
+                                            </Heading>
+                                          </ListItem>
+
+                                          <ListItem
+                                            mt="1rem"
+                                            display="flex"
+                                            alignItems="center"
+                                          >
+                                            <Image
+                                              src="../assets/header/avatar1.jpg"
+                                              alt=""
+                                              w="50px"
+                                              h="50px"
+                                              borderRadius="0.5rem"
+                                              objectFit="cover"
+                                              mr="1rem"
+                                            />
+
+                                            <Heading
+                                              as="h4"
+                                              fontSize="17px"
+                                              color="#333333"
+                                            >
+                                              Kierran Salinas
+                                            </Heading>
+                                          </ListItem>
+                                        </UnorderedList>
+
+                                        <Button
+                                          w="100%"
+                                          bg="#2F80ED"
+                                          color="#fff"
+                                          fontSize="18px"
+                                        >
+                                          Invite
+                                        </Button>
+                                      </Box>
+                                    )}
                                   </Box>
                                 </Box>
                               </Flex>
