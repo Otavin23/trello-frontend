@@ -48,7 +48,8 @@ const PeriflMenu = () => {
           <Text fontSize="15px">teste@gmail.com</Text>
         </Box>
       </Flex>
-      <UnorderedList bg="#F5F5F5" borderRadius="0.5rem" m="1rem 0 0 0" p="0.5rem">
+
+      <UnorderedList borderRadius="0.5rem" m="1rem 0 0 0" p="0.5rem">
         <ListItem
           display="flex"
           alignItems="center"
@@ -68,7 +69,22 @@ const PeriflMenu = () => {
           />
           Dashboard
         </ListItem>
-
+        <ListItem
+          display="flex"
+          alignItems="center"
+          fontWeight="500"
+          color="#383838"
+          p="0.6rem"
+          borderRadius="0.5rem"
+          cursor="pointer"
+          transition="0.3s"
+          _hover={{
+            color: '#383838',
+            bg: '#E3E3E3',
+          }}
+        >
+          Invite boards
+        </ListItem>
         <ListItem
           display="flex"
           alignItems="center"

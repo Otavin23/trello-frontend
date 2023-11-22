@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Flex,
   Container,
@@ -65,17 +65,14 @@ const MyPage = ({ params }: Iprops) => {
     active: false,
   })
   const [visibility, setVisibility] = useState(false)
-
   const [invite, setInvite] = useState(false)
-
   const [infoCard, setInfoCard] = useState(false)
-
   const [label, setLabel] = useState(false)
-
   const [cover, setCover] = useState(false)
-
   const [cardMember, setCardMember] = useState(false)
 
+  const [inputInvite, setInputInvite] = useState('')
+  const [dataInvite, setDataInvite] = useState([])
   const {
     register,
     handleSubmit,
@@ -148,6 +145,26 @@ const MyPage = ({ params }: Iprops) => {
       mutate()
     } catch (error) {
       toast.error('problem renaming column')
+    }
+  }
+
+  const searchUser = async () => {
+    const { data } = await api.post('/board/search/invite', {
+      email: inputInvite,
+    })
+    setDataInvite([data])
+  }
+
+  const sendInviteUser = async () => {
+    try {
+      await api.post('/board/invite/add', {
+        email: dataInvite.email,
+        idBoard: data.id,
+      })
+
+      toast.success('Sent with success')
+    } catch (error) {
+      toast.error('failed to send')
     }
   }
 
@@ -323,8 +340,15 @@ const MyPage = ({ params }: Iprops) => {
                         placeholder="User..."
                         variant="unstyled"
                         px="0.5rem"
+                        onChange={({ target }) => setInputInvite(target.value)}
                       />
-                      <Button bg="#2F80ED" h="100%" p="0.5rem 0" borderRadius="0.7rem">
+                      <Button
+                        onClick={() => searchUser()}
+                        bg="#2F80ED"
+                        h="100%"
+                        p="0.5rem 0"
+                        borderRadius="0.7rem"
+                      >
                         <Image src="../assets/lupa.png" alt="" w="20px" h="20px" />
                       </Button>
                     </Flex>
@@ -338,56 +362,37 @@ const MyPage = ({ params }: Iprops) => {
                       p="1rem"
                       pt="0"
                     >
-                      <ListItem mt="1rem" display="flex" alignItems="center">
-                        <Image
-                          src="../assets/header/avatar3.jpg"
-                          alt=""
-                          w="50px"
-                          h="50px"
-                          borderRadius="0.5rem"
-                          objectFit="cover"
-                          mr="1rem"
-                        />
+                      {dataInvite.map((user: any, index) => (
+                        <ListItem
+                          key={index}
+                          mt="1rem"
+                          display="flex"
+                          alignItems="center"
+                        >
+                          <Image
+                            src={user.image}
+                            alt=""
+                            w="50px"
+                            h="50px"
+                            borderRadius="0.5rem"
+                            objectFit="cover"
+                            mr="1rem"
+                          />
 
-                        <Heading as="h4" fontSize="17px" color="#333333">
-                          Morris Croft
-                        </Heading>
-                      </ListItem>
-
-                      <ListItem mt="1rem" display="flex" alignItems="center">
-                        <Image
-                          src="../assets/header/avatar2.jpg"
-                          alt=""
-                          w="50px"
-                          h="50px"
-                          borderRadius="0.5rem"
-                          objectFit="cover"
-                          mr="1rem"
-                        />
-
-                        <Heading as="h4" fontSize="17px" color="#333333">
-                          Kunal Hough
-                        </Heading>
-                      </ListItem>
-
-                      <ListItem mt="1rem" display="flex" alignItems="center">
-                        <Image
-                          src="../assets/header/avatar1.jpg"
-                          alt=""
-                          w="50px"
-                          h="50px"
-                          borderRadius="0.5rem"
-                          objectFit="cover"
-                          mr="1rem"
-                        />
-
-                        <Heading as="h4" fontSize="17px" color="#333333">
-                          Kierran Salinas
-                        </Heading>
-                      </ListItem>
+                          <Heading as="h4" fontSize="17px" color="#333333">
+                            {user.name}
+                          </Heading>
+                        </ListItem>
+                      ))}
                     </UnorderedList>
 
-                    <Button w="100%" bg="#2F80ED" color="#fff" fontSize="18px">
+                    <Button
+                      onClick={() => sendInviteUser()}
+                      w="100%"
+                      bg="#2F80ED"
+                      color="#fff"
+                      fontSize="18px"
+                    >
                       Invite
                     </Button>
                   </Box>

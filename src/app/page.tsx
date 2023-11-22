@@ -52,10 +52,20 @@ const MyPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { data: user } = useContext(TrelloContext)
 
-  const { data, isLoading, mutate } = useSWR(
-    `/board/list/${user?.data.id}`,
+  const {
+    data: isBoard,
+    isLoading: isLoadingBoard,
+    mutate,
+  } = useSWR(`/board/list/${user?.data.id}`, async (url) => {
+    const { data } = await api.get(url)
+    return data
+  })
+
+  const { data: isInvited, isLoading: invitedLoading } = useSWR(
+    `/board/list/invites/${user?.data.id}`,
     async (url) => {
       const { data } = await api.get(url)
+      console.log(data)
       return data
     },
   )
@@ -208,9 +218,8 @@ const MyPage = () => {
                 </Modal>
               </Box>
             </Flex>
-
             <Flex justify="space-between" mt="2rem" data-aos="fade-right">
-              {isLoading ? (
+              {isLoadingBoard ? (
                 <>
                   <SkeletonLoading />
                   <SkeletonLoading />
@@ -219,14 +228,49 @@ const MyPage = () => {
                 </>
               ) : (
                 <>
-                  {data?.length <= 0 && (
+                  {isBoard?.length <= 0 && (
                     <Text as="span" color="#303030" fontSize="18px">
                       Até o momento, não há nenhum card disponível. Crie um clicando no
                       botão Criar
                     </Text>
                   )}
 
-                  {data?.map(({ id, image, name }: IBoardCard) => (
+                  {isBoard?.map(({ id, image, name }: IBoardCard) => (
+                    <Link href={`/board/${id}`} key={id}>
+                      <BoardCard
+                        image={image}
+                        title={name}
+                        personArray={[
+                          '../assets/header/logoavatar.png',
+                          '../assets/header/avatar3.jpg',
+                          '../assets/header/avatar4.png',
+                        ]}
+                      />
+                    </Link>
+                  ))}
+                </>
+              )}
+            </Flex>
+
+            <Heading mt="2rem">Invites</Heading>
+
+            <Flex justify="space-between" mt="2rem" data-aos="fade-right">
+              {invitedLoading ? (
+                <>
+                  <SkeletonLoading />
+                  <SkeletonLoading />
+                  <SkeletonLoading />
+                  <SkeletonLoading />
+                </>
+              ) : (
+                <>
+                  {isInvited?.length <= 0 && (
+                    <Text as="span" color="#303030" fontSize="18px">
+                      Até o momento, não há nenhum card de invite
+                    </Text>
+                  )}
+
+                  {isInvited?.map(({ id, image, name }: IBoardCard) => (
                     <Link href={`/board/${id}`} key={id}>
                       <BoardCard
                         image={image}
