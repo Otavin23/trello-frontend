@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef } from 'react'
 import {
   Flex,
   Container,
@@ -26,7 +26,6 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { BoardCreate } from '@/utils/schema/BoardCreate'
 import { toast } from 'react-hot-toast'
 import '../../../styles/animations/animation.css'
-import { info } from 'console'
 
 interface Iprops {
   params: {
@@ -74,6 +73,8 @@ const MyPage = ({ params }: Iprops) => {
     idCard: '',
     baseColumn: '',
     image: '',
+    members: [],
+    cardMember: [],
   })
   const [label, setLabel] = useState(false)
   const [cover, setCover] = useState(false)
@@ -244,6 +245,22 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
+  const addMembers = async (member) => {
+    try {
+      await api.post('/board/member/card', {
+        baseColumn: infoCard.baseColumn,
+        idCard: infoCard.idCard,
+        id: infoCard.id,
+        idUser: member.id,
+        name: member.name,
+        image: member.image,
+      })
+    } catch (error) {
+      console.log('error')
+    }
+  }
+
+  console.log(infoCard)
   return (
     <>
       <Header />
@@ -343,35 +360,23 @@ const MyPage = ({ params }: Iprops) => {
                 m="0 0 0 1.5rem"
                 listStyleType="none"
               >
-                <ListItem mr="1rem">
-                  <Image
-                    src="../assets/header/logoavatar.png"
-                    alt=""
-                    w="40px"
-                    h="40px"
-                    borderRadius="30%"
-                  />
-                </ListItem>
-
-                <ListItem mr="1rem">
-                  <Image
-                    src="../assets/header/avatar3.jpg"
-                    alt=""
-                    w="40px"
-                    h="40px"
-                    borderRadius="30%"
-                  />
-                </ListItem>
-
-                <ListItem mr="1rem">
-                  <Image
-                    src="../assets/header/avatar4.png"
-                    alt=""
-                    w="40px"
-                    h="40px"
-                    borderRadius="30%"
-                  />
-                </ListItem>
+                {isLoading ? (
+                  'carregnado'
+                ) : (
+                  <>
+                    {data.members.map((member) => (
+                      <ListItem mr="1rem" key={member.id}>
+                        <Image
+                          src={member.image}
+                          alt=""
+                          w="40px"
+                          h="40px"
+                          borderRadius="30%"
+                        />
+                      </ListItem>
+                    ))}
+                  </>
+                )}
               </UnorderedList>
 
               <Box>
@@ -903,6 +908,8 @@ const MyPage = ({ params }: Iprops) => {
                                     idCard: card.id,
                                     id: board.id,
                                     baseColumn: data.id,
+                                    members: data.members,
+                                    cardMember: card.members,
                                   })
                                 }
                                 cursor="pointer"
@@ -924,7 +931,7 @@ const MyPage = ({ params }: Iprops) => {
                                   />
                                 )}
                                 <Text fontWeight="500" fontSize="20px" mt="1rem">
-                                  ✋🏿 {card.title}
+                                  {card.title}
                                 </Text>
 
                                 <UnorderedList
@@ -1707,59 +1714,26 @@ const MyPage = ({ params }: Iprops) => {
                                     </Text>
 
                                     <UnorderedList m="0">
-                                      <ListItem
-                                        display="flex"
-                                        alignItems="center"
-                                        mt="1rem"
-                                      >
-                                        <Image
-                                          src="../assets/header/avatar1.jpg"
-                                          alt=""
-                                          w="45px"
-                                          h="45px"
-                                          borderRadius="0.5rem"
-                                          mr="1rem"
-                                        />
-                                        <Heading as="h4" fontSize="15px">
-                                          Daniel Jensen
-                                        </Heading>
-                                      </ListItem>
-
-                                      <ListItem
-                                        display="flex"
-                                        alignItems="center"
-                                        mt="1rem"
-                                      >
-                                        <Image
-                                          src="../assets/header/avatar2.jpg"
-                                          alt=""
-                                          w="45px"
-                                          h="45px"
-                                          borderRadius="0.5rem"
-                                          mr="1rem"
-                                        />
-                                        <Heading as="h4" fontSize="15px">
-                                          Bianca Sosa
-                                        </Heading>
-                                      </ListItem>
-
-                                      <ListItem
-                                        display="flex"
-                                        alignItems="center"
-                                        mt="1rem"
-                                      >
-                                        <Image
-                                          src="../assets/header/avatar3.jpg"
-                                          alt=""
-                                          w="45px"
-                                          h="45px"
-                                          borderRadius="0.5rem"
-                                          mr="1rem"
-                                        />
-                                        <Heading as="h4" fontSize="15px">
-                                          Waqar Bloom
-                                        </Heading>
-                                      </ListItem>
+                                      {infoCard.cardMember?.map((member, index) => (
+                                        <ListItem
+                                          key={index}
+                                          display="flex"
+                                          alignItems="center"
+                                          mt="1rem"
+                                        >
+                                          <Image
+                                            src={member.image}
+                                            alt=""
+                                            w="45px"
+                                            h="45px"
+                                            borderRadius="0.5rem"
+                                            mr="1rem"
+                                          />
+                                          <Heading as="h4" fontSize="15px">
+                                            {member.name}
+                                          </Heading>
+                                        </ListItem>
+                                      ))}
                                     </UnorderedList>
 
                                     <Button
@@ -1844,87 +1818,34 @@ const MyPage = ({ params }: Iprops) => {
                                           p="1rem"
                                           pt="0"
                                         >
-                                          <ListItem
-                                            mt="1rem"
-                                            display="flex"
-                                            alignItems="center"
-                                          >
-                                            <Image
-                                              src="../assets/header/avatar3.jpg"
-                                              alt=""
-                                              w="50px"
-                                              h="50px"
-                                              borderRadius="0.5rem"
-                                              objectFit="cover"
-                                              mr="1rem"
-                                            />
-
-                                            <Heading
-                                              as="h4"
-                                              fontSize="17px"
-                                              color="#333333"
+                                          {infoCard.members?.map((infoCard, index) => (
+                                            <ListItem
+                                              onClick={() => addMembers(infoCard)}
+                                              key={index}
+                                              mt="1rem"
+                                              display="flex"
+                                              alignItems="center"
                                             >
-                                              Morris Croft
-                                            </Heading>
-                                          </ListItem>
+                                              <Image
+                                                src={infoCard.image}
+                                                alt=""
+                                                w="50px"
+                                                h="50px"
+                                                borderRadius="0.5rem"
+                                                objectFit="cover"
+                                                mr="1rem"
+                                              />
 
-                                          <ListItem
-                                            mt="1rem"
-                                            display="flex"
-                                            alignItems="center"
-                                          >
-                                            <Image
-                                              src="../assets/header/avatar2.jpg"
-                                              alt=""
-                                              w="50px"
-                                              h="50px"
-                                              borderRadius="0.5rem"
-                                              objectFit="cover"
-                                              mr="1rem"
-                                            />
-
-                                            <Heading
-                                              as="h4"
-                                              fontSize="17px"
-                                              color="#333333"
-                                            >
-                                              Kunal Hough
-                                            </Heading>
-                                          </ListItem>
-
-                                          <ListItem
-                                            mt="1rem"
-                                            display="flex"
-                                            alignItems="center"
-                                          >
-                                            <Image
-                                              src="../assets/header/avatar1.jpg"
-                                              alt=""
-                                              w="50px"
-                                              h="50px"
-                                              borderRadius="0.5rem"
-                                              objectFit="cover"
-                                              mr="1rem"
-                                            />
-
-                                            <Heading
-                                              as="h4"
-                                              fontSize="17px"
-                                              color="#333333"
-                                            >
-                                              Kierran Salinas
-                                            </Heading>
-                                          </ListItem>
+                                              <Heading
+                                                as="h4"
+                                                fontSize="17px"
+                                                color="#333333"
+                                              >
+                                                {infoCard.name}
+                                              </Heading>
+                                            </ListItem>
+                                          ))}
                                         </UnorderedList>
-
-                                        <Button
-                                          w="100%"
-                                          bg="#2F80ED"
-                                          color="#fff"
-                                          fontSize="18px"
-                                        >
-                                          Invite
-                                        </Button>
                                       </Box>
                                     )}
                                   </Box>
