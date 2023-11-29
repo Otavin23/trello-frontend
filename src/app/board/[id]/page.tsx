@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import {
   Flex,
   Container,
@@ -59,6 +59,7 @@ const MyPage = ({ params }: Iprops) => {
     id: '',
     active: false,
   })
+
   const [rename, setRename] = useState({
     userId: '',
     id: '',
@@ -66,13 +67,36 @@ const MyPage = ({ params }: Iprops) => {
   })
   const [visibility, setVisibility] = useState(false)
   const [invite, setInvite] = useState(false)
-  const [infoCard, setInfoCard] = useState(false)
+  const [infoCard, setInfoCard] = useState({
+    active: false,
+    id: '',
+    idCard: '',
+    baseColumn: '',
+  })
   const [label, setLabel] = useState(false)
   const [cover, setCover] = useState(false)
   const [cardMember, setCardMember] = useState(false)
 
   const [inputInvite, setInputInvite] = useState('')
   const [dataInvite, setDataInvite] = useState([])
+
+  const [colorLabel, setColorLabel] = useState('')
+  const labelInput = useRef(null)
+  const labelLIst = [
+    'rgba(33, 150, 83, 1)',
+    'rgba(242, 201, 76, 1)',
+    'rgba(242, 153, 74, 1)',
+    'rgba(235, 87, 87, 1)',
+    'rgba(47, 128, 237, 1)',
+    'rgba(86, 204, 242, 1)',
+    'rgba(111, 207, 151, 1)',
+    'rgba(51, 51, 51, 1)',
+    'rgba(79, 79, 79, 1)',
+    'rgba(130, 130, 130, 1)',
+    'rgba(189, 189, 189, 1)',
+    'rgba(224, 224, 224, 1)',
+  ]
+
   const {
     register,
     handleSubmit,
@@ -168,6 +192,26 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
+  const createLabel = async (user, board) => {
+    try {
+      const colorBg = colorLabel.split(',')
+      colorBg[3] = '0.2)'
+
+      await api.post('board/addLabels', {
+        ...infoCard,
+        label: labelInput.current.value,
+        color: colorLabel,
+        background: colorBg.join(','),
+      })
+
+      toast.success('Label create with sucess')
+      mutate()
+    } catch (error) {
+      toast.error('Error creating label')
+    }
+  }
+
+  console.log(data)
   return (
     <>
       <Header />
@@ -820,7 +864,14 @@ const MyPage = ({ params }: Iprops) => {
                             {board.card?.map((card) => (
                               <Box
                                 key={card.id}
-                                onClick={() => setInfoCard(!infoCard)}
+                                onClick={() =>
+                                  setInfoCard({
+                                    active: !infoCard.active,
+                                    idCard: card.id,
+                                    id: board.id,
+                                    baseColumn: data.id,
+                                  })
+                                }
                                 cursor="pointer"
                                 as="article"
                                 my="1rem"
@@ -833,22 +884,30 @@ const MyPage = ({ params }: Iprops) => {
                                   ✋🏿 {card.title}
                                 </Text>
 
-                                <UnorderedList w="100%" m="1rem 0" listStyleType="none">
-                                  <ListItem>
-                                    <Text
-                                      as="span"
-                                      w="100%"
-                                      bg="#EBDCF9"
-                                      px="0.8rem"
-                                      py="0.3rem"
-                                      fontSize="14px"
-                                      fontWeight="500"
-                                      borderRadius="1rem"
-                                      color="#9B51E0"
-                                    >
-                                      Concept
-                                    </Text>
-                                  </ListItem>
+                                <UnorderedList
+                                  w="100%"
+                                  m="1rem 0"
+                                  listStyleType="none"
+                                  display="flex"
+                                  alignItems="center"
+                                >
+                                  {card.labels.map((label, index) => (
+                                    <ListItem key={index} mr="0.5rem">
+                                      <Text
+                                        as="span"
+                                        w="100%"
+                                        bg={label.background}
+                                        px="0.8rem"
+                                        py="0.3rem"
+                                        fontSize="14px"
+                                        fontWeight="500"
+                                        borderRadius="1rem"
+                                        color={label.color}
+                                      >
+                                        {label.title}
+                                      </Text>
+                                    </ListItem>
+                                  ))}
                                 </UnorderedList>
 
                                 <Button
@@ -1014,7 +1073,10 @@ const MyPage = ({ params }: Iprops) => {
                           </Modal>
                         </Box>
 
-                        <Modal isOpen={infoCard} onClose={() => setInfoCard(!infoCard)}>
+                        <Modal
+                          isOpen={infoCard.active}
+                          onClose={() => setInfoCard(!infoCard.active)}
+                        >
                           <ModalOverlay />
                           <ModalContent
                             p="1.5rem"
@@ -1590,6 +1652,7 @@ const MyPage = ({ params }: Iprops) => {
                                             color: '#BDBDBD',
                                             fontWeight: '500',
                                           }}
+                                          ref={labelInput}
                                         />
 
                                         <UnorderedList
@@ -1600,89 +1663,23 @@ const MyPage = ({ params }: Iprops) => {
                                           justifyContent="space-between"
                                           listStyleType="none"
                                         >
-                                          <ListItem
-                                            bg="#219653"
-                                            py="1m"
-                                            mt="0.5rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#F2C94C"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#F2994A"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#EB5757"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#2F80ED"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#56CCF2"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#6FCF97"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#333"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#4F4F4F"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#828282"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#BDBDBD"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
-
-                                          <ListItem
-                                            bg="#E0E0E0"
-                                            mt="0.5rem"
-                                            py="1rem"
-                                            borderRadius="0.4rem"
-                                          ></ListItem>
+                                          {labelLIst.map((label, index) => (
+                                            <ListItem
+                                              key={index}
+                                              bg={label}
+                                              onClick={() => setColorLabel(label)}
+                                              py="1m"
+                                              mt="0.5rem"
+                                              w="65px"
+                                              h="35px"
+                                              cursor="pointer"
+                                              borderRadius="0.4rem"
+                                              transition="0.3s"
+                                              _hover={{
+                                                bg: '#000000ca',
+                                              }}
+                                            ></ListItem>
+                                          ))}
                                         </UnorderedList>
 
                                         <Text
@@ -1736,6 +1733,7 @@ const MyPage = ({ params }: Iprops) => {
                                         </UnorderedList>
 
                                         <Button
+                                          onClick={() => createLabel(data, board)}
                                           bg="#2F80ED"
                                           color="#fff"
                                           fontWeight="500"
