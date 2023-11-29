@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import {
   Flex,
   Container,
@@ -26,6 +26,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { BoardCreate } from '@/utils/schema/BoardCreate'
 import { toast } from 'react-hot-toast'
 import '../../../styles/animations/animation.css'
+import { info } from 'console'
 
 interface Iprops {
   params: {
@@ -72,6 +73,7 @@ const MyPage = ({ params }: Iprops) => {
     id: '',
     idCard: '',
     baseColumn: '',
+    image: '',
   })
   const [label, setLabel] = useState(false)
   const [cover, setCover] = useState(false)
@@ -97,6 +99,9 @@ const MyPage = ({ params }: Iprops) => {
     'rgba(224, 224, 224, 1)',
   ]
 
+  const [imageCoverInput, setImageCoverInput] = useState('programmer')
+  const coverInput = useRef(null)
+
   const {
     register,
     handleSubmit,
@@ -110,6 +115,18 @@ const MyPage = ({ params }: Iprops) => {
     async (url) => {
       const { data } = await api.get(url)
       return data
+    },
+  )
+
+  const {
+    data: dataImage,
+    isLoading: imageLoading,
+    mutate: imageMutate,
+  } = useSWR(
+    `https://api.unsplash.com/search/photos?query=${imageCoverInput}&per_page=12&client_id=sdByuQYfhH_4i54unAH_MZV62Gu-4LvAK-foOWUszW4`,
+    async (url) => {
+      const { data } = await api.get(url)
+      return data.results
     },
   )
 
@@ -211,7 +228,22 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
-  console.log(data)
+  const searchImageCover = () => {
+    setImageCoverInput(coverInput.current.value)
+    imageMutate()
+  }
+
+  const addImage = async (image) => {
+    try {
+      await api.post('/board/change/image', { ...infoCard, image })
+
+      imageMutate()
+      toast.success('Image added to card')
+    } catch (error) {
+      toast.error('Error adding image to card')
+    }
+  }
+
   return (
     <>
       <Header />
@@ -867,6 +899,7 @@ const MyPage = ({ params }: Iprops) => {
                                 onClick={() =>
                                   setInfoCard({
                                     active: !infoCard.active,
+                                    image: card.image,
                                     idCard: card.id,
                                     id: board.id,
                                     baseColumn: data.id,
@@ -880,7 +913,17 @@ const MyPage = ({ params }: Iprops) => {
                                 boxShadow="0px 4px 12px 0px #0000000D"
                                 borderRadius="1rem"
                               >
-                                <Text fontWeight="500" fontSize="20px">
+                                {card.image.length >= 1 && (
+                                  <Image
+                                    src={card.image}
+                                    alt=""
+                                    borderRadius="0.5rem"
+                                    h="150px"
+                                    w="100%"
+                                    objectFit="cover"
+                                  />
+                                )}
+                                <Text fontWeight="500" fontSize="20px" mt="1rem">
                                   ✋🏿 {card.title}
                                 </Text>
 
@@ -931,6 +974,7 @@ const MyPage = ({ params }: Iprops) => {
                             onClick={() =>
                               setBoardActive({
                                 id: board.id,
+
                                 active: !boardActive.active,
                               })
                             }
@@ -1087,7 +1131,7 @@ const MyPage = ({ params }: Iprops) => {
                           >
                             <ModalBody p="0">
                               <Image
-                                src="../assets/trabalho.jpg"
+                                src={infoCard.image}
                                 alt=""
                                 w="100%"
                                 h="200px"
@@ -1425,8 +1469,10 @@ const MyPage = ({ params }: Iprops) => {
                                             placeholder="Keywords..."
                                             variant="unstyled"
                                             px="0.5rem"
+                                            ref={coverInput}
                                           />
                                           <Button
+                                            onClick={searchImageCover}
                                             bg="#2F80ED"
                                             h="100%"
                                             w="55px"
@@ -1450,137 +1496,31 @@ const MyPage = ({ params }: Iprops) => {
                                           justifyContent="space-between"
                                           listStyleType="none"
                                         >
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image1.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="100%"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image2.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image3.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image4.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image4.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="100%"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image3.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image2.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image1.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image1.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="100%"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image2.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image3.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
-
-                                          <ListItem mt="0.5rem">
-                                            <Image
-                                              src="../assets/boards/cover/image4.jpg"
-                                              alt=""
-                                              h="60px"
-                                              w="70px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-                                          </ListItem>
+                                          {imageLoading ? (
+                                            <h1>carregando</h1>
+                                          ) : (
+                                            <>
+                                              {dataImage.map((image, index) => (
+                                                <ListItem
+                                                  onClick={() =>
+                                                    addImage(image.urls.full)
+                                                  }
+                                                  mt="0.5rem"
+                                                  key={index}
+                                                  cursor="pointer"
+                                                >
+                                                  <Image
+                                                    src={image.urls.full}
+                                                    alt=""
+                                                    h="60px"
+                                                    w="100%"
+                                                    objectFit="cover"
+                                                    borderRadius="0.5rem"
+                                                  />
+                                                </ListItem>
+                                              ))}
+                                            </>
+                                          )}
                                         </UnorderedList>
                                       </Box>
                                     )}
