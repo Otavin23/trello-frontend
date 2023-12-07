@@ -1,5 +1,5 @@
 'use client'
-import { useContext, useState } from 'react'
+import { useContext } from 'react'
 import { Header } from '../components/header'
 import {
   Image,
@@ -17,23 +17,16 @@ import {
   Input,
   Text,
 } from '@chakra-ui/react'
-import { BoardCard } from '../components/boardCard'
-import useSWR from 'swr'
+
 import { api } from '../service/api'
-import { SkeletonLoading } from '../components/Skeleton'
 import { useForm, SubmitHandler } from 'react-hook-form'
 import { BoardCreate } from '../utils/schema/BoardCreate'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { toast } from 'react-hot-toast'
 import { TrelloContext } from '../context/TrelloContext'
 import { PrivateRouter } from './PrivateRouter'
-import Link from 'next/link'
-
-interface IBoardCard {
-  id: string
-  image: string
-  name: string
-}
+import { ListsCards } from '@/components/listCards'
+import { mutate } from 'swr'
 
 interface ICreateBoard {
   title: string
@@ -52,30 +45,12 @@ const MyPage = () => {
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { data: user } = useContext(TrelloContext)
 
-  const {
-    data: isBoard,
-    isLoading: isLoadingBoard,
-    mutate,
-  } = useSWR(`/board/list/${user?.data.id}`, async (url) => {
-    const { data } = await api.get(url)
-    return data
-  })
-
-  const { data: isInvited, isLoading: invitedLoading } = useSWR(
-    `/board/list/invites/${user?.data.id}`,
-    async (url) => {
-      const { data } = await api.get(url)
-      console.log(data)
-      return data
-    },
-  )
-
   const createBoardSubmit: SubmitHandler<ICreateBoard> = async ({ title }) => {
     try {
       await api.post('/board/create', { title, id: user.data.id })
 
       toast.success('Card Creation Complete')
-      mutate()
+      mutate(`/board/list/${user?.data.id}`)
     } catch (error) {
       toast.error('Card already present on the board')
     }
@@ -85,10 +60,11 @@ const MyPage = () => {
     <>
       <PrivateRouter>
         <Header />
+
         <Flex as="section" justify="center">
           <Container m="0" p="0" maxW="1400px" w="95%" mt="4rem" data-aos="fade-right">
             <Flex justify="space-between" align="center">
-              <Heading as="h3" fontSize="20px" fontWeight="600">
+              <Heading as="h3" fontSize="20px" fontWeight="500">
                 All Boards
               </Heading>
 
@@ -218,74 +194,10 @@ const MyPage = () => {
                 </Modal>
               </Box>
             </Flex>
-            <Flex justify="space-between" mt="2rem" data-aos="fade-right">
-              {isLoadingBoard ? (
-                <>
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                </>
-              ) : (
-                <>
-                  {isBoard?.length <= 0 && (
-                    <Text as="span" color="#303030" fontSize="18px">
-                      Até o momento, não há nenhum card disponível. Crie um clicando no
-                      botão Criar
-                    </Text>
-                  )}
 
-                  {isBoard?.map(({ id, image, name }: IBoardCard) => (
-                    <Link href={`/board/${id}`} key={id}>
-                      <BoardCard
-                        image={image}
-                        title={name}
-                        personArray={[
-                          '../assets/header/logoavatar.png',
-                          '../assets/header/avatar3.jpg',
-                          '../assets/header/avatar4.png',
-                        ]}
-                      />
-                    </Link>
-                  ))}
-                </>
-              )}
-            </Flex>
+            <ListsCards url={`/board/list/${user?.data.id}`} />
 
-            <Heading mt="2rem">Invites</Heading>
-
-            <Flex justify="space-between" mt="2rem" data-aos="fade-right">
-              {invitedLoading ? (
-                <>
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                  <SkeletonLoading />
-                </>
-              ) : (
-                <>
-                  {isInvited?.length <= 0 && (
-                    <Text as="span" color="#303030" fontSize="18px">
-                      Até o momento, não há nenhum card de invite
-                    </Text>
-                  )}
-
-                  {isInvited?.map(({ id, image, name }: IBoardCard) => (
-                    <Link href={`/board/${id}`} key={id}>
-                      <BoardCard
-                        image={image}
-                        title={name}
-                        personArray={[
-                          '../assets/header/logoavatar.png',
-                          '../assets/header/avatar3.jpg',
-                          '../assets/header/avatar4.png',
-                        ]}
-                      />
-                    </Link>
-                  ))}
-                </>
-              )}
-            </Flex>
+            <ListsCards column="All Invites" url={`/board/list/${user?.data.id}`} />
           </Container>
         </Flex>
       </PrivateRouter>

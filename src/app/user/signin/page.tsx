@@ -35,19 +35,18 @@ const MyPage = () => {
 
       localStorage.setItem('token', token.data)
 
-      toast.success('Bem vindo')
+      toast.success('Welcome')
 
-      return Router.push('/')
+      return Router.replace('/')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
-      console.log('hello')
       setLoading(false)
       toast.error(`${error.response.data.message}`)
     }
   }
 
   return (
-    <FormControl as="form" onSubmit={handleSubmit(handleSubmitForm)}>
+    <FormControl as="form" role="form" onSubmit={handleSubmit(handleSubmitForm)}>
       <Flex as="div" justify="center">
         <Image
           src="../assets/Logo.svg"
@@ -64,6 +63,7 @@ const MyPage = () => {
         <React.Fragment key={form.register}>
           <Input
             type={form.type}
+            id={form.id}
             placeholder={form.placeholder}
             {...register(form.register)}
             py="1.4rem"

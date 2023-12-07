@@ -44,6 +44,8 @@ interface ITaskCreate {
 }
 
 const MyPage = ({ params }: Iprops) => {
+  const userLocal = JSON.parse(localStorage.getItem('user') || '{}')
+
   const [boardActive, setBoardActive] = useState({
     id: '',
     active: false,
@@ -75,6 +77,7 @@ const MyPage = ({ params }: Iprops) => {
     image: '',
     members: [],
     cardMember: [],
+    chat: [],
   })
   const [label, setLabel] = useState(false)
   const [cover, setCover] = useState(false)
@@ -103,6 +106,8 @@ const MyPage = ({ params }: Iprops) => {
   const [imageCoverInput, setImageCoverInput] = useState('programmer')
   const coverInput = useRef(null)
 
+  const commentInput = useRef(null)
+
   const {
     register,
     handleSubmit,
@@ -118,6 +123,8 @@ const MyPage = ({ params }: Iprops) => {
       return data
     },
   )
+
+  console.log(data)
 
   const {
     data: dataImage,
@@ -260,7 +267,24 @@ const MyPage = ({ params }: Iprops) => {
     }
   }
 
-  console.log(infoCard)
+  const commentCard = async () => {
+    try {
+      await api.post('/board/card/comment', {
+        baseColumn: infoCard.baseColumn,
+        idCard: infoCard.idCard,
+        id: infoCard.id,
+        idUser: userLocal.data.id,
+        name: userLocal.data.name,
+        image: userLocal.data.image,
+        description: commentInput.current.value,
+      })
+
+      toast.success('comment sent')
+    } catch (error) {
+      console.log('error')
+    }
+  }
+
   return (
     <>
       <Header />
@@ -910,6 +934,7 @@ const MyPage = ({ params }: Iprops) => {
                                     baseColumn: data.id,
                                     members: data.members,
                                     cardMember: card.members,
+                                    chat: card.comments,
                                   })
                                 }
                                 cursor="pointer"
@@ -936,7 +961,7 @@ const MyPage = ({ params }: Iprops) => {
 
                                 <UnorderedList
                                   w="100%"
-                                  m="1rem 0"
+                                  m="1.5em 0"
                                   listStyleType="none"
                                   display="flex"
                                   alignItems="center"
@@ -954,25 +979,41 @@ const MyPage = ({ params }: Iprops) => {
                                         borderRadius="1rem"
                                         color={label.color}
                                       >
+                                        {console.log(label)}
                                         {label.title}
                                       </Text>
                                     </ListItem>
                                   ))}
                                 </UnorderedList>
 
-                                <Button
-                                  bg="#2F80ED"
-                                  p="0.5rem"
-                                  h="100%"
-                                  borderRadius="0.7rem"
-                                >
-                                  <Image
-                                    src="../assets/add.png"
-                                    alt=""
-                                    w="20px"
-                                    h="20px"
-                                  />
-                                </Button>
+                                <Flex align="center" w="100%" mt="1rem">
+                                  <UnorderedList
+                                    listStyleType="none"
+                                    display="flex"
+                                    alignItems="center"
+                                    m="0"
+                                  >
+                                    {card.members.map((memberCard, index) => (
+                                      <ListItem key={index} w="40px" h="100%" mr="0.5rem">
+                                        <Image
+                                          src={memberCard.image}
+                                          alt=""
+                                          borderRadius="0.7rem"
+                                          objectFit="cover"
+                                        />
+                                      </ListItem>
+                                    ))}
+                                  </UnorderedList>
+
+                                  <Button bg="#2F80ED" p="0.5rem" borderRadius="0.7rem">
+                                    <Image
+                                      src="../assets/add.png"
+                                      alt=""
+                                      w="20px"
+                                      h="20px"
+                                    />
+                                  </Button>
+                                </Flex>
                               </Box>
                             ))}
                           </Box>
@@ -1152,7 +1193,7 @@ const MyPage = ({ params }: Iprops) => {
                               >
                                 <Box w="100%">
                                   <Heading as="h2" fontWeight="400" fontSize="20px">
-                                    ✋🏿 Move anything that is actually started here
+                                    Move anything that is actually started here
                                   </Heading>
                                   <Text mt="0.5rem" fontWeight="600" color="#BDBDBD">
                                     in list
@@ -1235,6 +1276,7 @@ const MyPage = ({ params }: Iprops) => {
                                           h="100%"
                                           border="none"
                                           variant="unstyled"
+                                          ref={commentInput}
                                           _placeholder={{
                                             fontSize: '23px',
                                             color: '#BDBDBD',
@@ -1249,142 +1291,81 @@ const MyPage = ({ params }: Iprops) => {
                                         fontWeight="500"
                                         borderRadius="1rem"
                                         mt="1rem"
+                                        onClick={commentCard}
                                       >
                                         Comment
                                       </Button>
                                     </Flex>
 
                                     <UnorderedList m="0">
-                                      <ListItem
-                                        listStyleType="none"
-                                        mt="2.5rem"
-                                        py="2rem"
-                                        borderBottom="1px solid #F2F2F2"
-                                      >
-                                        <Flex justify="space-between" align="center">
-                                          <Flex align="center">
-                                            <Image
-                                              src="../assets/header/logoavatar.png"
-                                              alt=""
-                                              w="50px"
-                                              h="50px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
+                                      {infoCard.chat?.map((comment, index) => (
+                                        <ListItem
+                                          key={index}
+                                          listStyleType="none"
+                                          mt="2.5rem"
+                                          py="2rem"
+                                          borderBottom="1px solid #F2F2F2"
+                                        >
+                                          <Flex justify="space-between" align="center">
+                                            <Flex align="center">
+                                              <Image
+                                                src={comment.image}
+                                                alt=""
+                                                w="50px"
+                                                h="50px"
+                                                objectFit="cover"
+                                                borderRadius="0.5rem"
+                                              />
 
-                                            <Box ml="1rem">
-                                              <Heading
-                                                as="h3"
-                                                fontSize="18.5px"
+                                              <Box ml="1rem">
+                                                <Heading
+                                                  as="h3"
+                                                  fontSize="18.5px"
+                                                  fontWeight="500"
+                                                >
+                                                  {comment.title}
+                                                </Heading>
+                                                <Text
+                                                  as="span"
+                                                  color="#BDBDBD"
+                                                  letterSpacing="-0.35px"
+                                                >
+                                                  {comment.date}
+                                                </Text>
+                                              </Box>
+                                            </Flex>
+
+                                            <Flex align="center">
+                                              <Button
+                                                variant="unstyled"
+                                                color="#828282"
                                                 fontWeight="500"
+                                                fontSize="15px"
                                               >
-                                                Mikael Stanley
-                                              </Heading>
-                                              <Text
-                                                as="span"
-                                                color="#BDBDBD"
-                                                letterSpacing="-0.35px"
-                                              >
-                                                24 August at 20:43
-                                              </Text>
-                                            </Box>
-                                          </Flex>
-
-                                          <Flex align="center">
-                                            <Button
-                                              variant="unstyled"
-                                              color="#828282"
-                                              fontWeight="500"
-                                              fontSize="15px"
-                                            >
-                                              Edit
-                                            </Button>
-                                            <Box
-                                              mx="0.5rem"
-                                              w="10px"
-                                              h="2px"
-                                              bg="#828282"
-                                            ></Box>
-                                            <Button
-                                              variant="unstyled"
-                                              color="#828282"
-                                              fontWeight="500"
-                                              fontSize="15px"
-                                            >
-                                              Delete
-                                            </Button>
-                                          </Flex>
-                                        </Flex>
-
-                                        <Text mt="1rem" color="#4F4F4F" fontSize="20px">
-                                          “The gladdest moment in human life, methinks, is
-                                          a departure into unknown lands.” – Sir Richard
-                                          Burton
-                                        </Text>
-                                      </ListItem>
-
-                                      <ListItem listStyleType="none" mt="2.5rem">
-                                        <Flex justify="space-between" align="center">
-                                          <Flex align="center">
-                                            <Image
-                                              src="../assets/header/logoavatar.png"
-                                              alt=""
-                                              w="50px"
-                                              h="50px"
-                                              objectFit="cover"
-                                              borderRadius="0.5rem"
-                                            />
-
-                                            <Box ml="1rem">
-                                              <Heading
-                                                as="h3"
-                                                fontSize="18.5px"
+                                                Edit
+                                              </Button>
+                                              <Box
+                                                mx="0.5rem"
+                                                w="10px"
+                                                h="2px"
+                                                bg="#828282"
+                                              ></Box>
+                                              <Button
+                                                variant="unstyled"
+                                                color="#828282"
                                                 fontWeight="500"
+                                                fontSize="15px"
                                               >
-                                                Mikael Stanley
-                                              </Heading>
-                                              <Text
-                                                as="span"
-                                                color="#BDBDBD"
-                                                letterSpacing="-0.35px"
-                                              >
-                                                24 August at 20:43
-                                              </Text>
-                                            </Box>
+                                                Delete
+                                              </Button>
+                                            </Flex>
                                           </Flex>
 
-                                          <Flex align="center">
-                                            <Button
-                                              variant="unstyled"
-                                              color="#828282"
-                                              fontWeight="500"
-                                              fontSize="15px"
-                                            >
-                                              Edit
-                                            </Button>
-                                            <Box
-                                              mx="0.5rem"
-                                              w="10px"
-                                              h="2px"
-                                              bg="#828282"
-                                            ></Box>
-                                            <Button
-                                              variant="unstyled"
-                                              color="#828282"
-                                              fontWeight="500"
-                                              fontSize="15px"
-                                            >
-                                              Delete
-                                            </Button>
-                                          </Flex>
-                                        </Flex>
-
-                                        <Text mt="1rem" color="#4F4F4F" fontSize="20px">
-                                          “The gladdest moment in human life, methinks, is
-                                          a departure into unknown lands.” – Sir Richard
-                                          Burton
-                                        </Text>
-                                      </ListItem>
+                                          <Text mt="1rem" color="#4F4F4F" fontSize="20px">
+                                            {comment.description}
+                                          </Text>
+                                        </ListItem>
+                                      ))}
                                     </UnorderedList>
                                   </Box>
                                 </Box>

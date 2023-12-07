@@ -3,7 +3,13 @@ import { Text, Box, Heading, Image, ListItem, UnorderedList } from '@chakra-ui/r
 interface IProps {
   image: string
   title: string
-  personArray: string[]
+  personArray: [
+    {
+      id: string
+      image: string
+      name: string
+    },
+  ]
 }
 
 const BoardCard = ({ image, title, personArray }: IProps) => {
@@ -13,18 +19,19 @@ const BoardCard = ({ image, title, personArray }: IProps) => {
       bg="#fff"
       boxShadow="0px 4px 12px 0px rgba(0, 0, 0, 0.05)"
       p="1rem"
+      mb="2.5rem"
       borderRadius="0.6rem"
     >
       <Image
         src={image}
         alt="background image card"
         w="100%"
-        h="160px"
+        h="130px"
         borderRadius="1rem"
         objectFit="cover"
       />
 
-      <Heading as="h3" fontSize="18px" my="1rem" fontWeight="600">
+      <Heading as="h3" fontSize="18px" my="1rem" fontWeight="500">
         {title}
       </Heading>
 
@@ -35,9 +42,9 @@ const BoardCard = ({ image, title, personArray }: IProps) => {
         m="2rem 0 0 0"
       >
         {personArray.map((person) => (
-          <ListItem key={person}>
+          <ListItem key={person.id}>
             <Image
-              src={person}
+              src={person.image}
               alt=""
               w="40px"
               h="40px"
@@ -47,9 +54,12 @@ const BoardCard = ({ image, title, personArray }: IProps) => {
             />
           </ListItem>
         ))}
-        <Text as="span" ml="0.5rem" color="#BDBDBD" fontSize="15px">
-          + 5 others
-        </Text>
+
+        {personArray.length > 5 && (
+          <Text as="span" ml="0.5rem" color="#BDBDBD" fontSize="15px">
+            + 5 others
+          </Text>
+        )}
       </UnorderedList>
     </Box>
   )

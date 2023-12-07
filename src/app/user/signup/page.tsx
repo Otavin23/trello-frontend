@@ -1,12 +1,12 @@
 'use client'
 import React from 'react'
-
 import { Flex, Image, FormControl, Text, Input, Button } from '@chakra-ui/react'
-import { formSignup } from '../../../utils/formStructure'
 import { useForm, SubmitHandler } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
 import { RegisterSchema } from '../../../utils/schema/Form'
+import { formSignup } from '../../../utils/formStructure'
+import { yupResolver } from '@hookform/resolvers/yup'
 import { api } from '../../../service/api'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import toast from 'react-hot-toast'
 
@@ -26,10 +26,15 @@ const MyPage = () => {
     resolver: yupResolver(RegisterSchema),
   })
 
+  const router = useRouter()
+
   const handleSubmitForm: SubmitHandler<IForm> = async (data) => {
     try {
       await api.post('/user/signup', data)
+
       toast.success('User created successfully. Take advantage of our services')
+
+      router.replace('signin')
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       toast.error(`${error.response.data.message}`)
@@ -37,12 +42,13 @@ const MyPage = () => {
   }
 
   return (
-    <FormControl as="form" onSubmit={handleSubmit(handleSubmitForm)}>
+    <FormControl as="form" role="form" onSubmit={handleSubmit(handleSubmitForm)}>
       <Flex as="div" justify="center">
         <Image
           src="../assets/Logo.svg"
           alt="2 blue squares with the name trullo written"
           w="120px"
+          h="50px"
         />
       </Flex>
 
@@ -54,6 +60,7 @@ const MyPage = () => {
         <React.Fragment key={form.register}>
           <Input
             type={form.type}
+            id={form.id}
             placeholder={form.placeholder}
             {...register(form.register)}
             py="1.3rem"
@@ -72,11 +79,19 @@ const MyPage = () => {
         </React.Fragment>
       ))}
 
-      <Button type="submit" w="100%" my="1rem" bg="#0052CC" color="#fff" fontSize="15px">
+      <Button
+        type="submit"
+        role="button"
+        w="100%"
+        my="1rem"
+        bg="#0052CC"
+        color="#fff"
+        fontSize="15px"
+      >
         Registre-se
       </Button>
 
-      <Link href="/user/signin">
+      <Link href="/user/signin" role="link">
         <Text
           as="span"
           display="flex"
